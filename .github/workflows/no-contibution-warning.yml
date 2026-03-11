@@ -1,19 +1,20 @@
 # add a warning to issue description when issue is labeled "Needs ..."
 # and remove it if all such lables are removed
 name: "Add or remove no-contribution warning"
+ 
+permissions:
+  contents: read
+  issues: write
 
+on:
+  issues:
+    types:
+      - labeled
+      
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   GH_REPO: ${{ github.repository }}
   ISSUE_NUMBER: ${{ github.event.issue.number }}
-  
-permissions:
-  issues: write
-  
-on:
-  issues:
-    types: 
-      -labeled
 
 jobs:
   add_no_contribution_warning:
