@@ -17,8 +17,9 @@ env:
     >[!WARNING]
     
     >This issue is not (yet) open for contribution. If you are looking to contribute, please have a look at our [contributing doc](https://scikit-learn.org/dev/developers/contributing.html) and in particular the section [Issues for new contributors](https://scikit-learn.org/dev/developers/contributing.html#issues-for-new-contributors).
-  
-  
+    
+    
+
 jobs:
   add_no_contribution_warning:
     runs-on: ubuntu-latest
@@ -32,9 +33,7 @@ jobs:
             exit 0
           fi
           
-          new_body="$WARNING_MESSAGE
-          
-          $body"
+          new_body="$WARNING_MESSAGE$body"
           
           gh issue edit "$ISSUE_NUMBER" --body "$new_body"
 
@@ -46,14 +45,16 @@ jobs:
       - name: Remove no-contribution warning
         run: |
           has_needs_label="$(gh issue view "$ISSUE_NUMBER" --json labels --jq '.labels[].name | select(startswith("Needs"))' | head -n 1)"
+          
           if [[ -z "$has_needs_label" ]]; then
             body="$(gh issue view "$ISSUE_NUMBER" --json body --jq .body)"
+            
             if [[ "$body" != "$WARNING_MESSAGE"* ]]; then
               exit 0
             fi
+            
             new_body="${body#"$WARNING_MESSAGE"}"
-            new_body="${new_body#$'\n'}"
-            new_body="${new_body#$'\n'}"
+
             gh issue edit "$ISSUE_NUMBER" --body "$new_body"
           fi
             
