@@ -1,0 +1,44 @@
+# add a warning to issue description when issue is labeled "Needs ..."
+# and remove it if all such lables are removed
+name: "Add or remove no-contribution warning"
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GH_REPO: ${{ github.repository }}
+  ISSUE_NUMBER: ${{ github.event.issue.number }}
+  WARNING_MESSAGE: '> [!WARNING]\n> This issue is not (yet) open for contribution. If you are looking to contribute, please have a look at our [contributing doc](https://scikit-learn.org/dev/developers/contributing.html) and in particular the section [Issues for new contributors](https://scikit-learn.org/dev/developers/contributing.html#issues-for-new-contributors).'
+  
+permissions:
+  issues: write
+  
+on:
+  issues:
+    types: 
+      -labeled
+
+jobs:
+  add_no_contribution_warning:
+    runs-on: ubuntu-latest
+    if: startsWith(github.event.label.name, 'Needs')
+    steps:
+      - run |
+          body="$(gh issue view "$ISSUE_NUMBER" --json body --jq .body)"
+          if [[ "$body" == "$WARNING_MESSAGE"* ]]; then
+            exit 0
+          fi
+          if [[ -z "$body" ]]; then
+            new_body="${WARNING_MESSAGE}"
+          else
+            new_body="${WARNING_MESSAGE}\n\n${body}"
+          fi
+          gh issue edit "$ISSUE_NUMBER" --body "$new_body"
+
+
+  # remove_no_contribution_warning:
+  #   runs-on: ubuntu-latest
+  #   if: $(gh issue view "$ISSUE_NUMBER" --json labels --jq '.labels[].name | select(startswith("Needs"))' | head -n 1)
+  #   steps:
+  #     - run
+  #     # if issue body starts with 
+  #     # '> [!WARNING]\n> This issue is not (yet) open for contribution. If you are looking to contribute, please have a look at our [contributing doc](https://scikit-learn.org/dev/developers/contributing.html) and in particular the section [Issues for new contributors](https://scikit-learn.org/dev/developers/contributing.html#issues-for-new-contributors).'
+  #     # remove warning from issue body
