@@ -33,7 +33,10 @@ jobs:
           if [[ -z "$body" ]]; then
             new_body="${warning_message}"
           else
-            new_body="${warning_message}\n\n${body}"
+            new_body="
+            ${warning_message}
+            
+            ${body}"
           fi
           gh issue edit "$ISSUE_NUMBER" --body "$new_body"
 
