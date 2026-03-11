@@ -28,15 +28,10 @@ jobs:
       - name: Add no-contribution warning
         run: |
           body="$(gh issue view "$ISSUE_NUMBER" --json body --jq .body)"
-          
-          if [[ "$body" == "$WARNING_MESSAGE"* ]]; then
-            exit 0
+          if [[ "$body" != "$WARNING_MESSAGE"* ]]; then
+            new_body="$WARNING_MESSAGE$body"
+            gh issue edit "$ISSUE_NUMBER" --body "$new_body"
           fi
-          
-          new_body="$WARNING_MESSAGE$body"
-          
-          gh issue edit "$ISSUE_NUMBER" --body "$new_body"
-
 
   remove_no_contribution_warning:
     runs-on: ubuntu-latest
@@ -45,15 +40,10 @@ jobs:
       - name: Remove no-contribution warning
         run: |
           has_needs_label="$(gh issue view "$ISSUE_NUMBER" --json labels --jq '.labels[].name | select(startswith("Needs"))' | head -n 1)"
-          
           if [[ -z "$has_needs_label" ]]; then
-            body="$(gh issue view "$ISSUE_NUMBER" --json body --jq .body)"
-            
-            if [[ "$body" != "$WARNING_MESSAGE"* ]]; then
-              exit 0
+            body="$(gh issue view "$ISSUE_NUMBER" --json body --jq .body)" 
+            if [[ "$body" == "$WARNING_MESSAGE"* ]]; then
+              new_body="${body#"$WARNING_MESSAGE"}"
+              gh issue edit "$ISSUE_NUMBER" --body "$new_body"
             fi
-            
-            new_body="${body#"$WARNING_MESSAGE"}"
-
-            gh issue edit "$ISSUE_NUMBER" --body "$new_body"
           fi
