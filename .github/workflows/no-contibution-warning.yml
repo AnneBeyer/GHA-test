@@ -57,5 +57,3 @@ jobs:
 
             gh issue edit "$ISSUE_NUMBER" --body "$new_body"
           fi
-            
-      #       new_body="${body//warning_message}"
