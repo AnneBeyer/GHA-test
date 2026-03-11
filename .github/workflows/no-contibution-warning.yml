@@ -6,7 +6,6 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   GH_REPO: ${{ github.repository }}
   ISSUE_NUMBER: ${{ github.event.issue.number }}
-  WARNING_MESSAGE: '> [!WARNING]\n> This issue is not (yet) open for contribution. If you are looking to contribute, please have a look at our [contributing doc](https://scikit-learn.org/dev/developers/contributing.html) and in particular the section [Issues for new contributors](https://scikit-learn.org/dev/developers/contributing.html#issues-for-new-contributors).'
   
 permissions:
   issues: write
@@ -21,15 +20,18 @@ jobs:
     runs-on: ubuntu-latest
     if: startsWith(github.event.label.name, 'Needs')
     steps:
-      - run |
+      - name: Add no-contribution warning
+        run: |
           body="$(gh issue view "$ISSUE_NUMBER" --json body --jq .body)"
-          if [[ "$body" == "$WARNING_MESSAGE"* ]]; then
+          warning_message="> [!WARNING]\n> This issue is not (yet) open for contribution. If you are looking to contribute, please have a look at our [contributing doc](https://scikit-learn.org/dev/developers/contributing.html) and in particular the section [Issues for new contributors](https://scikit-learn.org/dev/developers/contributing.html#issues-for-new-contributors)."
+  
+          if [[ "$body" == "$warning_message"* ]]; then
             exit 0
           fi
           if [[ -z "$body" ]]; then
-            new_body="${WARNING_MESSAGE}"
+            new_body="${warning_message}"
           else
-            new_body="${WARNING_MESSAGE}\n\n${body}"
+            new_body="${warning_message}\n\n${body}"
           fi
           gh issue edit "$ISSUE_NUMBER" --body "$new_body"
 
