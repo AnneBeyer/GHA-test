@@ -43,7 +43,7 @@ jobs:
     steps:
       - name: Remove no-contribution warning
         run: |
-          has_needs_lable="$(gh issue view 1 --json labels --jq '.labels[].name | head -n 1")
+          has_needs_lable="$(gh issue view 1 --json labels --jq '.labels[].name | head -n 1)"
           
           if [ -z "$has_needs_lable" ]; then
           
