@@ -33,8 +33,7 @@ jobs:
           if [[ -z "$body" ]]; then
             new_body="${warning_message}"
           else
-            new_body="
-            ${warning_message}
+            new_body="${warning_message}
             
             ${body}"
           fi
