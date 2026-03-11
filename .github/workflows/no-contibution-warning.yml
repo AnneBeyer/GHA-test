@@ -30,7 +30,7 @@ jobs:
             exit 0
           fi
           
-          new_body='${warning_message}\n\n${body}'
+          new_body="${warning_message}"'$\n\n'"$body"
           
           gh issue edit "$ISSUE_NUMBER" --body "$new_body"
 
