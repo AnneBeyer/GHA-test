@@ -18,6 +18,7 @@ env:
     > This issue is not (yet) open for contribution. If you are looking to contribute,
     please have a look at our [contributing doc](https://scikit-learn.org/dev/developers/contributing.html)
     and in particular the section for [new contributors](https://scikit-learn.org/dev/developers/contributing.html#new-contributors).' }}
+
 jobs:
   add_no_contribution_warning:
     runs-on: ubuntu-latest
@@ -32,7 +33,7 @@ jobs:
           if [[ -z "$body" ]]; then
             new_body="$WARNING_MESSAGE"
           else
-            new_body="$WARNING_MESSAGE"$'\n'"$body"
+            new_body="$WARNING_MESSAGE"$'\n\n'"$body"
           fi
           gh issue edit "$ISSUE_NUMBER" --body "$new_body"
 
@@ -48,7 +49,7 @@ jobs:
             if [[ "$body" != "$WARNING_MESSAGE"* ]]; then
               exit 0
             fi
-            new_body="${body#"$WARNING_MESSAGE"$'\n'}"
+            new_body="${body#"$WARNING_MESSAGE"}"
             gh issue edit "$ISSUE_NUMBER" --body "$new_body"
           fi
           
