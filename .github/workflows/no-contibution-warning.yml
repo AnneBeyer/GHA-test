@@ -28,7 +28,7 @@ jobs:
       - name: Add no-contribution warning
         run: |
           body="$(gh issue view "$ISSUE_NUMBER" --json body --jq .body)"
-          if [[ "$body" != "$WARNING_MESSAGE"* ]]; then
+          if [[ $body != "$WARNING_MESSAGE"* ]]; then
             new_body="$WARNING_MESSAGE"$'\n'"$body"
             gh issue edit "$ISSUE_NUMBER" --body "$new_body"
           fi
@@ -42,8 +42,8 @@ jobs:
           has_needs_label="$(gh issue view "$ISSUE_NUMBER" --json labels --jq '.labels[].name | select(startswith("Needs"))' | head -n 1)"
           if [[ -z "$has_needs_label" ]]; then
             body="$(gh issue view "$ISSUE_NUMBER" --json body --jq .body)"
-            if [[ "$body" == "$WARNING_MESSAGE"* ]]; then
-              new_body="${body#"$WARNING_MESSAGE"$'\n'}"
+            if [[ $body == "$WARNING_MESSAGE"* ]]; then
+              new_body="${body#"$WARNING_MESSAGE"}"
               gh issue edit "$ISSUE_NUMBER" --body "$new_body"
             fi
           fi
