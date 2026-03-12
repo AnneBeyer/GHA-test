@@ -21,7 +21,6 @@ env:
     please have a look at our [contributing doc](https://scikit-learn.org/dev/developers/contributing.html) 
     and in particular the section for [new contributors](https://scikit-learn.org/dev/developers/contributing.html#new-contributors).
 
-
 jobs:
   add_no_contribution_warning:
     runs-on: ubuntu-latest
