@@ -14,9 +14,9 @@ env:
   GH_REPO: ${{ github.repository }}
   ISSUE_NUMBER: ${{ github.event.issue.number }}
   WARNING_MESSAGE: >
-    >[!WARNING]
+    > [!WARNING]
 
-    >This issue is not (yet) open for contribution. If you are looking to contribute,
+    > This issue is not (yet) open for contribution. If you are looking to contribute,
     please have a look at our [contributing doc](https://scikit-learn.org/dev/developers/contributing.html)
     and in particular the section for [new contributors](https://scikit-learn.org/dev/developers/contributing.html#new-contributors).
 
