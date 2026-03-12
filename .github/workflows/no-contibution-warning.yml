@@ -1,5 +1,5 @@
-# Add a warning to the issue description when the issue is labeled "Needs ...",
-# and remove it again if all such labels are removed.
+# Add a warning to the issue description when the issue is labeled "Needs ..." 
+# and doesn't have a warning yet, and remove it again when all such labels are removed.
 name: "Add or remove no-contribution warning"
 
 permissions:
@@ -28,10 +28,15 @@ jobs:
       - name: Add no-contribution warning
         run: |
           body="$(gh issue view "$ISSUE_NUMBER" --json body --jq .body)"
-          if [[ $body != "$WARNING_MESSAGE"* ]]; then
-            new_body="$WARNING_MESSAGE"$'\n'"$body"
-            gh issue edit "$ISSUE_NUMBER" --body "$new_body"
+          if [[ "$body" == "$WARNING_MESSAGE"* ]]; then  
+            exit 0
           fi
+          if [[ -z "$body" ]]; then
+            new_body="$WARNING_MESSAGE"
+          else
+            new_body="$WARNING_MESSAGE"$'\n'"$body"
+          fi
+          gh issue edit "$ISSUE_NUMBER" --body "$new_body"
 
   remove_no_contribution_warning:
     runs-on: ubuntu-latest
@@ -39,11 +44,13 @@ jobs:
     steps:
       - name: Remove no-contribution warning
         run: |
-          has_needs_label="$(gh issue view "$ISSUE_NUMBER" --json labels --jq '.labels[].name | select(startswith("Needs"))' | head -n 1)"
-          if [[ -z "$has_needs_label" ]]; then
+          still_has_needs_labels="$(gh issue view "$ISSUE_NUMBER" --json labels --jq '.labels[].name | select(startswith("Needs"))' | head -n 1)"
+          if [[ -z "$still_has_needs_labels" ]]; then
             body="$(gh issue view "$ISSUE_NUMBER" --json body --jq .body)"
-            if [[ $body == "$WARNING_MESSAGE"* ]]; then
-              new_body="${body#"$WARNING_MESSAGE"}"
-              gh issue edit "$ISSUE_NUMBER" --body "$new_body"
+            if [[ "$body" != "$WARNING_MESSAGE"* ]]; then
+              exit 0
             fi
+            new_body="${body#"$WARNING_MESSAGE"$'\n'}"
+            gh issue edit "$ISSUE_NUMBER" --body "$new_body"
           fi
+          
