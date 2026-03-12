@@ -33,7 +33,7 @@ jobs:
           if [[ -z "$body" ]]; then
             new_body="$WARNING_MESSAGE"
           else
-            new_body="$WARNING_MESSAGE"$'\n'"$body"
+            new_body="$WARNING_MESSAGE"$'\n\n'"$body"
           fi
           gh issue edit "$ISSUE_NUMBER" --body "$new_body"
 
@@ -49,7 +49,7 @@ jobs:
             if [[ "$body" != "$WARNING_MESSAGE"* ]]; then
               exit 0
             fi
-            new_body="${body#"$WARNING_MESSAGE"$'\n'}"
+            new_body="${body#"$WARNING_MESSAGE"$'\n\n'}"
             gh issue edit "$ISSUE_NUMBER" --body "$new_body"
           fi
           
