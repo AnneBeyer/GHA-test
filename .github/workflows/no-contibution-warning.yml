@@ -29,13 +29,7 @@ jobs:
         run: |
           body="$(gh issue view "$ISSUE_NUMBER" --json body --jq .body)"
           if [[ "$body" != "$WARNING_MESSAGE"* ]]; then  
-          #  exit 0
-          #fi
-          #if [[ -z "$body" ]]; then
-          #  new_body="$WARNING_MESSAGE"
-          #else
             new_body="$WARNING_MESSAGE"$'\n\n'"$body"
-          ##fi
             gh issue edit "$ISSUE_NUMBER" --body "$new_body"
           fi
 
@@ -48,12 +42,11 @@ jobs:
           still_has_needs_labels="$(gh issue view "$ISSUE_NUMBER" --json labels --jq '.labels[].name | select(startswith("Needs"))' | head -n 1)"
           if [[ -z "$still_has_needs_labels" ]]; then
             body="$(gh issue view "$ISSUE_NUMBER" --json body --jq .body)"
-            if [[ "$body" != "$WARNING_MESSAGE"* ]]; then
-              exit 0
-            fi
-            
-            new_body="${body#"$WARNING_MESSAGE"}"
-
-            gh issue edit "$ISSUE_NUMBER" --body "$new_body"
+            if [[ "$body" == "$WARNING_MESSAGE"* ]]; then
+            #  exit 0
+            #fi
+              new_body="${body#"$WARNING_MESSAGE"}"
+              gh issue edit "$ISSUE_NUMBER" --body "$new_body"
+            fi  
           fi
           
