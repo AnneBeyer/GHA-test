@@ -1,5 +1,6 @@
 # Add a warning to the issue description when the issue is labeled "Needs ..." 
 # and doesn't have a warning yet, and remove it again when all such labels are removed.
+
 name: "Add or remove no-contribution warning"
 
 permissions:
@@ -15,8 +16,8 @@ env:
   ISSUE_NUMBER: ${{ github.event.issue.number }}
   WARNING_MESSAGE: ${{ '> [!WARNING]
   
-    > This issue is not (yet) open for contribution. If you are looking to contribute,
-    please have a look at our [contributing doc](https://scikit-learn.org/dev/developers/contributing.html)
+    > This issue is not yet ready for a PR. If you are interested in contributing,
+    please have a look at our [contributing doc](https://scikit-learn.org/dev/developers/contributing.html),
     and in particular the section for [new contributors](https://scikit-learn.org/dev/developers/contributing.html#new-contributors).' }}
 
 jobs:
@@ -27,15 +28,16 @@ jobs:
       - name: Add no-contribution warning
         run: |
           body="$(gh issue view "$ISSUE_NUMBER" --json body --jq .body)"
-          if [[ "$body" == "$WARNING_MESSAGE"* ]]; then  
-            exit 0
-          fi
-          if [[ -z "$body" ]]; then
-            new_body="$WARNING_MESSAGE"
-          else
+          if [[ "$body" != "$WARNING_MESSAGE"* ]]; then  
+          #  exit 0
+          #fi
+          #if [[ -z "$body" ]]; then
+          #  new_body="$WARNING_MESSAGE"
+          #else
             new_body="$WARNING_MESSAGE"$'\n\n'"$body"
+          ##fi
+            gh issue edit "$ISSUE_NUMBER" --body "$new_body"
           fi
-          gh issue edit "$ISSUE_NUMBER" --body "$new_body"
 
   remove_no_contribution_warning:
     runs-on: ubuntu-latest
