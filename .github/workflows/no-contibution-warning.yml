@@ -7,7 +7,7 @@ permissions:
 
 on:
   issues:
-    types: [labeled, unlabeled]
+    types: [opened, labeled, unlabeled]
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -22,7 +22,7 @@ env:
 jobs:
   add_no_contribution_warning:
     runs-on: ubuntu-latest
-    if: github.event.action == 'labeled' && startsWith(github.event.label.name, 'Needs')
+    if: github.event.action == 'opened' || (github.event.action == 'labeled' && startsWith(github.event.label.name, 'Needs'))
     steps:
       - name: Add no-contribution warning
         run: |
