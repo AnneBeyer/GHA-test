@@ -1,6 +1,6 @@
 # Add a warning to the issue description when the issue is labeled "Needs ..."
 # and doesn't have a warning yet, and remove it again when all such labels are removed.
-name: "Add or remove no-contribution warning"
+name: "Add or remove not-ready-for-PR warning"
 
 permissions:
   contents: read
@@ -28,31 +28,34 @@ env:
     ' }}
 
 jobs:
-  add_no_contribution_warning:
+  add_not_ready_for_PR_warning:
     runs-on: ubuntu-latest
     if: github.event.action == 'opened' || (github.event.action == 'labeled' && startsWith(github.event.label.name, 'Needs'))
     steps:
-      - name: Add no-contribution warning
+      - name: Add not-ready-for-PR warning
         run: |
           if [[ "$BODY" != "$WARNING_MESSAGE"* ]]; then
             new_body="$WARNING_MESSAGE"$'\n\n'"$BODY"
             gh issue edit "$ISSUE_NUMBER" --body "$new_body"
           fi
 
-  remove_no_contribution_warning:
+  remove_not_ready_for_PR_warning:
     runs-on: ubuntu-latest
     if: github.event.action == 'unlabeled' && 
         startsWith(github.event.label.name, 'Needs') && 
-        (github.event.issue.labels.*.name | select(startsWith('Needs')) == [])
     steps:
-      - name: Remove no-contribution warning
+      - name: Remove not-ready-for-PR warning
         run: |
-          if [[ "$BODY" == "$WARNING_MESSAGE"* ]]; then
-            new_body="${BODY#"$WARNING_MESSAGE"$'\n\n'}"
-            # make sure warning message is removed even if body was empty before
-            # (if empty string, `gh issue edit` will do nothing)
-            if [[-z "$new_body"]]; then
-              new_body=" "
+          remaining_needs_labels="$(github.event.issue.labels.*.name |
+          select(startsWith('Needs')) | head -n 1)"
+          if [[ -z "$remaining_needs_labels" ]]; then
+            if [[ "$BODY" == "$WARNING_MESSAGE"* ]]; then
+              new_body="${BODY#"$WARNING_MESSAGE"$'\n\n'}"
+              # make sure warning message is removed even if body was empty before
+              # (if empty string, `gh issue edit` will do nothing)
+              if [[-z "$new_body"]]; then
+                new_body=" "
+              fi
+              gh issue edit "$ISSUE_NUMBER" --body "$new_body"
             fi
-            gh issue edit "$ISSUE_NUMBER" --body "$new_body"
           fi
