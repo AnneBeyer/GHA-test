@@ -36,6 +36,8 @@ jobs:
     steps:
       - name: Add not-ready-for-PR warning
         run: |
+          pwd
+          ls -R
           python .github/scripts/add_or_remove_no_pr_warning.py --mode="add"
       
   remove_not_ready_for_PR_warning:
