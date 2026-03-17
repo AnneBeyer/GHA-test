@@ -20,6 +20,8 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
@@ -37,7 +39,7 @@ jobs:
       - name: Add not-ready-for-PR warning
         run: |
           pwd
-          ls -R
+          ls -a
           python .github/scripts/add_or_remove_no_pr_warning.py --mode="add"
       
   remove_not_ready_for_PR_warning:
