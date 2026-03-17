@@ -1,5 +1,6 @@
-# Add a warning to the issue description when the issue is labeled "Needs ...",
-# and remove it again if all such labels are removed.
+# Add a warning to the issue description when the issue is labeled "Needs ..." 
+# and doesn't have a warning yet, and remove it again when all such labels are removed.
+
 name: "Add or remove no-contribution warning"
 
 permissions:
