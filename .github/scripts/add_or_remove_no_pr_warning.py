@@ -5,14 +5,13 @@ import argparse
 from github import Github
 
 parser = argparse.ArgumentParser(description="Add or remove no-contribution warning from issue body")
-parser.add_argument("issue_number", help="The issue to update", type=str)
 parser.add_argument("--mode", choices=["add", "remove"], help="Whether to add or remove warning")
 args = parser.parse_args()
 
 # the following env variables are defined in .github/workflows/not_ready_for_pr_warning.yml
 g = Github(os.environ["GITHUB_TOKEN"])
 repo = g.get_repo(os.environ["GITHUB_REPO"])
-issue = repo.get_issue(number=int(args.issue_number))
+issue = repo.get_issue(number=int(os.environ["ISSUE_NUMBER"]))
 
 body = str(issue.body)
 
