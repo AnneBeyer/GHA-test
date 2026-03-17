@@ -8,7 +8,7 @@ parser.add_argument("--mode", choices=["add", "remove"], help="Whether to add or
 args = parser.parse_args()
 
 # the following env variables are defined in .github/workflows/not_ready_for_pr_warning.yml
-g = Github(Auth.Token(os.environ["GITHUB_TOKEN"]))
+g = Github(auth=Auth.Token(os.environ["GITHUB_TOKEN"]))
 repo = g.get_repo(os.environ["GITHUB_REPO"])
 issue = repo.get_issue(number=int(os.environ["ISSUE_NUMBER"]))
 
