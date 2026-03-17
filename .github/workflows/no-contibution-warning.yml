@@ -42,8 +42,8 @@ jobs:
     steps:
       - name: Remove no-contribution warning
         run: |
-          still_has_needs_labels="$ join(github.event.issue.labels.*.name, ', ') | select(startswith("Needs"))' | head -n 1)"
-          if [[ -z "$still_has_needs_labels" ]]; then
+          remaining_needs_labels="$(github.event.issue.labels.*.name | select(startswith("Needs"))"
+          if [[ "$remaining_needs_labels" == [] ]]; then
             if [[ "$BODY" == "$WARNING_MESSAGE"* ]]; then
               new_body="${BODY#"$WARNING_MESSAGE"$'\n\n'}"
               # make sure warning message is removed even if body was empty before
