@@ -4,7 +4,7 @@ name: "Add or remove not-ready-for-PR warning"
 
 permissions:
   contents: read
-  issues: write
+  #issues: write
 
 on:
   issues:
@@ -12,49 +12,37 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  GH_REPO: ${{ github.repository }}
+  GHITHUB_REPO: ${{ github.repository }}
   ISSUE_NUMBER: ${{ github.event.issue.number }}
-  BODY: ${{ github.event.issue.body }}
-  WARNING_MESSAGE: ${{ 
-    '> [!WARNING]
-
-     > This issue is not yet ready for a PR. If you are interested in contributing to scikit-learn,
-     please have a look at our [contributing guidelines](https://scikit-learn.org/dev/developers/contributing.html),
-     and in particular the sections for [new
-     contributors](https://scikit-learn.org/dev/developers/contributing.html#new-contributors)
-     and on the ["Needs
-     triage"](https://scikit-learn.org/defv/developers/contributing.html#issues-tagged-needs-triage)
-     label.
-    ' }}
 
 jobs:
+
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Install PyGithub
+        run: pip install -Uq PyGithub
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
   add_not_ready_for_PR_warning:
     runs-on: ubuntu-latest
+    needs: setup
     if: github.event.action == 'opened' || (github.event.action == 'labeled' && startsWith(github.event.label.name, 'Needs'))
     steps:
       - name: Add not-ready-for-PR warning
         run: |
-          if [[ "$BODY" != "$WARNING_MESSAGE"* ]]; then
-            new_body="$WARNING_MESSAGE"$'\n\n'"$BODY"
-            gh issue edit "$ISSUE_NUMBER" --body "$new_body"
-          fi
-
+          python .github/scripts/add_or_remove_warning.py --mode="add"
+      
   remove_not_ready_for_PR_warning:
     runs-on: ubuntu-latest
+    needs: setup
     if: github.event.action == 'unlabeled' && startsWith(github.event.label.name, 'Needs')
     steps:
       - name: Remove not-ready-for-PR warning
         run: |
-          remaining_needs_labels="$(github.event.issue.labels.*.name |
-          select(startsWith('Needs')) | head -n 1)"
-          if [[ -z "$remaining_needs_labels" ]]; then
-            if [[ "$BODY" == "$WARNING_MESSAGE"* ]]; then
-              new_body="${BODY#"$WARNING_MESSAGE"$'\n\n'}"
-              # make sure warning message is removed even if body was empty before
-              # (if empty string, `gh issue edit` will do nothing)
-              if [[-z "$new_body"]]; then
-                new_body=" "
-              fi
-              gh issue edit "$ISSUE_NUMBER" --body "$new_body"
-            fi
-          fi
+          python .github/scripts/add_or_remove_warning.py --mode="remove"
