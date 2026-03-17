@@ -1,19 +1,18 @@
-import json
 import os
-import re
+import sys
 import argparse
-from github import Github
+from github import Github, Auth
 
 parser = argparse.ArgumentParser(description="Add or remove no-contribution warning from issue body")
 parser.add_argument("--mode", choices=["add", "remove"], help="Whether to add or remove warning")
 args = parser.parse_args()
 
 # the following env variables are defined in .github/workflows/not_ready_for_pr_warning.yml
-g = Github(os.environ["GITHUB_TOKEN"])
+g = Github(Auth.Token(os.environ["GITHUB_TOKEN"]))
 repo = g.get_repo(os.environ["GITHUB_REPO"])
 issue = repo.get_issue(number=int(os.environ["ISSUE_NUMBER"]))
 
-body = str(issue.body)
+body_text = str(issue.body)
 
 message = (
     "> [!WARNING]\n" 
@@ -28,12 +27,18 @@ message = (
 )
 
 if args.mode == "add":
-    if not body.startswith(message):
-        new_body = message + body
+    if not body_text.startswith(message):
+        new_body = message + body_text
         issue.edit(body=new_body)
+        print(f"Added warning to issue: {args.issue_repo}#{issue.number}")
+        sys.exit()
 else:
     has_needs_label = any(label.name.startswith("Needs") for label in issue.labels)
+    print(f"labels: {issue.labels}")
     if has_needs_label:
-        if body.startswith(message):
-            new_body = body.removeprefix(message)
+        if body_text.startswith(message):
+            new_body = body_text.removeprefix(message)
+            new_body = new_body if new_body else " " 
             issue.edit(body=new_body)
+            print(f"Removed warning from issue: {args.issue_repo}#{issue.number}")
+            sys.exit()
