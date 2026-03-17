@@ -16,7 +16,7 @@ issue = repo.get_issue(number=int(os.environ["ISSUE_NUMBER"]))
 body = str(issue.body)
 
 message = (
-    "> [!WARNING]\n\n" 
+    "> [!WARNING]\n" 
     "> This issue is not yet ready for a PR. If you are interested in contributing to "
     "scikit-learn, please have a look at our [contributing guidelines]"
     "(https://scikit-learn.org/dev/developers/contributing.html), and in particular "
