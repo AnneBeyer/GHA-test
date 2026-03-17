@@ -1,6 +1,5 @@
-# Add a warning to the issue description when the issue is labeled "Needs ..." 
+# Add a warning to the issue description when the issue is labeled "Needs ..."
 # and doesn't have a warning yet, and remove it again when all such labels are removed.
-
 name: "Add or remove no-contribution warning"
 
 permissions:
@@ -13,7 +12,6 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  GH_REPO: ${{ github.repository }}
   ISSUE_NUMBER: ${{ github.event.issue.number }}
   BODY: ${{ github.event.issue.body }}
   WARNING_MESSAGE: ${{ 
@@ -22,7 +20,8 @@ env:
      > This issue is not yet ready for a PR. If you are interested in contributing to scikit-learn,
      please have a look at our [contributing doc](https://scikit-learn.org/dev/developers/contributing.html),
      and in particular the section for [new
-     contributors](https://scikit-learn.org/dev/developers/contributing.html#new-contributors).
+     contributors](https://scikit-learn.org/dev/developers/contributing.html#new-contributors)
+     and on the ["Needs Triage" label](https://scikit-learn.org/defv/developers/contributing.html#issues-tagged-needs-triage).
     ' }}
 
 jobs:
@@ -48,7 +47,7 @@ jobs:
             if [[ "$BODY" == "$WARNING_MESSAGE"* ]]; then
               new_body="${BODY#"$WARNING_MESSAGE"$'\n\n'}"
               # make sure warning message is removed even if body was empty before
-              # if empty string, `gh issue edit` will do nothing)
+              # (if empty string, `gh issue edit` will do nothing)
               if [[-z "$new_body"]]; then
                 new_body=" "
               fi
