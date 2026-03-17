@@ -12,6 +12,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GH_REPO: ${{ github.repository }}
   ISSUE_NUMBER: ${{ github.event.issue.number }}
   BODY: ${{ github.event.issue.body }}
   WARNING_MESSAGE: ${{ 
