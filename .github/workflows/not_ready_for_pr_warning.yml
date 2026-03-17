@@ -4,7 +4,7 @@ name: "Add or remove not-ready-for-PR warning"
 
 permissions:
   contents: read
-  #issues: write
+  issues: write
 
 on:
   issues:
