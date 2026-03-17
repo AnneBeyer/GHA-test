@@ -41,8 +41,8 @@ jobs:
 
   remove_no_contribution_warning:
     runs-on: ubuntu-latest
-    if: github.event.action == "unlabeled" && 
-        startsWith(github.event.label.name, "Needs") && 
+    if: github.event.action == 'unlabeled' && 
+        startsWith(github.event.label.name, 'Needs') && 
         github.event.issue.labels.*.name | select(startsWith('Needs')) == []
     steps:
       - name: Remove no-contribution warning
