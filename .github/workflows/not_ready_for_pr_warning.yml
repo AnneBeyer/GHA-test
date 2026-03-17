@@ -17,8 +17,10 @@ env:
 
 jobs:
 
-  setup:
+  add_not_ready_for_PR_warning:
     runs-on: ubuntu-latest
+    needs: setup
+    if: github.event.action == 'opened' || (github.event.action == 'labeled' && startsWith(github.event.label.name, 'Needs'))
     steps:
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -26,27 +28,23 @@ jobs:
           python-version: '3.13'
       - name: Install PyGithub
         run: pip install -Uq PyGithub
-
-  add_not_ready_for_PR_warning:
-    runs-on: ubuntu-latest
-    needs: setup
-    if: github.event.action == 'opened' || (github.event.action == 'labeled' && startsWith(github.event.label.name, 'Needs'))
-    steps:
       - name: Checkout repository
         uses: actions/checkout@v6
       - name: Add not-ready-for-PR warning
-        run: |
-          pwd
-          ls -a
-          python .github/scripts/add_or_remove_no_pr_warning.py --mode="add"
+        run: python .github/scripts/add_or_remove_no_pr_warning.py --mode="add"
       
   remove_not_ready_for_PR_warning:
     runs-on: ubuntu-latest
     needs: setup
     if: github.event.action == 'unlabeled' && startsWith(github.event.label.name, 'Needs')
     steps:
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Install PyGithub
+        run: pip install -Uq PyGithub
       - name: Checkout repository
         uses: actions/checkout@v6
       - name: Remove not-ready-for-PR warning
-        run: |
-          python .github/scripts/add_or_remove_no_pr_warning.py --mode="remove"
+        run: python .github/scripts/add_or_remove_no_pr_warning.py --mode="remove"
