@@ -23,22 +23,22 @@ message = (
     "(https://scikit-learn.org/dev/developers/contributing.html#new-contributors) and " 
     'on the ["Needs triage"]'
     "(https://scikit-learn.org/defv/developers/contributing.html#issues-tagged-needs-triage) "
-    "label.\n\n"
+    "label."
 )
 
 if args.mode == "add":
     if not body_text.startswith(message):
-        new_body = message + body_text
+        new_body = f("{message}\n\n{body_text}")
         issue.edit(body=new_body)
-        print(f"Added warning to issue: {os.environ["GITHUB_REPO"]}#{issue.number}")
+        sys.stdout(f"Added warning to issue: {os.environ["GITHUB_REPO"]}#{issue.number}")
         sys.exit()
 else:
     has_needs_label = any(label.name.startswith("Needs") for label in issue.labels)
-    print(f"labels: {issue.labels}")
+    sys.stdout(f"labels: {issue.labels}")
     if has_needs_label:
         if body_text.startswith(message):
-            new_body = body_text.removeprefix(message)
+            new_body = body_text.removeprefix(f("{message}\n\n"))
             new_body = new_body if new_body else " " 
             issue.edit(body=new_body)
-            print(f"Removed warning from issue: {os.environ["GITHUB_REPO"]}#{issue.number}")
+            sys.stdout(f"Removed warning from issue: {os.environ["GITHUB_REPO"]}#{issue.number}")
             sys.exit()
