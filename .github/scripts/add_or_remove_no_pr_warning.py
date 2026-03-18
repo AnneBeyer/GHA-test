@@ -30,15 +30,15 @@ if args.mode == "add":
     if not body_text.startswith(message):
         new_body = f("{message}\n\n{body_text}")
         issue.edit(body=new_body)
-        sys.stdout(f"Added warning to issue: {os.environ["GITHUB_REPO"]}#{issue.number}")
+        print(f"Added warning to issue: {os.environ["GITHUB_REPO"]}#{issue.number}")
         sys.exit()
 else:
     has_needs_label = any(label.name.startswith("Needs") for label in issue.labels)
-    sys.stdout(f"labels: {issue.labels}")
+    print(f"labels: {issue.labels}")
     if has_needs_label:
         if body_text.startswith(message):
             new_body = body_text.removeprefix(f("{message}\n\n"))
             new_body = new_body if new_body else " " 
             issue.edit(body=new_body)
-            sys.stdout(f"Removed warning from issue: {os.environ["GITHUB_REPO"]}#{issue.number}")
+            print(f"Removed warning from issue: {os.environ["GITHUB_REPO"]}#{issue.number}")
             sys.exit()
