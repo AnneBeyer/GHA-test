@@ -1,13 +1,18 @@
 # Used in Github Action .github/workflows/not_ready_for_pr_warning.yml
-import os
 import argparse
-from github import Github, Auth
+import os
 
-parser = argparse.ArgumentParser(description="Add or remove no-contribution warning from issue body")
-parser.add_argument("--mode", choices=["add", "remove"], help="Whether to add or remove warning")
+from github import Auth, Github
+
+parser = argparse.ArgumentParser(
+    description="Add or remove no-contribution warning from issue body"
+)
+parser.add_argument(
+    "--mode", choices=["add", "remove"], help="Whether to add or remove warning"
+)
 args = parser.parse_args()
 
-# the following env variables are defined in .github/workflows/not_ready_for_pr_warning.yml
+# env variables are defined in .github/workflows/not_ready_for_pr_warning.yml
 g = Github(auth=Auth.Token(os.environ["GITHUB_TOKEN"]))
 repo = g.get_repo(os.environ["GITHUB_REPO"])
 issue = repo.get_issue(number=int(os.environ["ISSUE_NUMBER"]))
@@ -15,22 +20,21 @@ issue = repo.get_issue(number=int(os.environ["ISSUE_NUMBER"]))
 body_text = str(issue.body) if issue.body else ""
 
 message = (
-    "> [!WARNING]\n" 
+    "> [!WARNING]\n"
     "> This issue is not yet ready for a PR. If you are interested in contributing to "
     "scikit-learn, please have a look at our [contributing guidelines]"
     "(https://scikit-learn.org/dev/developers/contributing.html), and in particular "
     "the sections for [new contributors]"
-    "(https://scikit-learn.org/dev/developers/contributing.html#new-contributors) and " 
-    'on the ["Needs triage"]'
-    "(https://scikit-learn.org/dev/developers/contributing.html#issues-tagged-needs-triage) "
-    "label."
+    "(https://scikit-learn.org/dev/developers/contributing.html#new-contributors) and "
+    'on the ["Needs triage"](https://scikit-learn.org/dev/developers/contributing.html#'
+    "issues-tagged-needs-triage) label."
 )
 
 if args.mode == "add":
     if not body_text.startswith(message):
         new_body = f"{message}\n\n{body_text}"
         issue.edit(body=new_body)
-        print(f"Added warning to issue: {os.environ["GITHUB_REPO"]}#{issue.number}")
+        print(f"Added warning to issue: {os.environ['GITHUB_REPO']}#{issue.number}")
 
 else:
     has_needs_labels = any(label.name.startswith("Needs") for label in issue.labels)
@@ -38,4 +42,7 @@ else:
         if body_text.startswith(message):
             new_body = body_text.removeprefix(f"{message}\n\n")
             issue.edit(body=new_body)
-            print(f"Removed warning from issue: {os.environ["GITHUB_REPO"]}#{issue.number}")
+            print(
+                "Removed warning from issue: "
+                f"{os.environ['GITHUB_REPO']}#{issue.number}"
+            )
