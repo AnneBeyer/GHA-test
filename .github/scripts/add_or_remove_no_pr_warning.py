@@ -22,7 +22,7 @@ message = (
     "the sections for [new contributors]"
     "(https://scikit-learn.org/dev/developers/contributing.html#new-contributors) and " 
     'on the ["Needs triage"]'
-    "(https://scikit-learn.org/defv/developers/contributing.html#issues-tagged-needs-triage) "
+    "(https://scikit-learn.org/dev/developers/contributing.html#issues-tagged-needs-triage) "
     "label."
 )
 
