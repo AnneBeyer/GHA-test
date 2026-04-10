@@ -38,7 +38,9 @@ jobs:
 
   remove_not_ready_for_PR_warning:
     runs-on: ubuntu-latest
-    if: github.event.action == 'unlabeled' && startsWith(github.event.label.name, 'Needs')
+    if: github.event.action == 'unlabeled' && 
+        (startsWith(github.event.label.name, 'Needs') || 
+        github.event.label.name == 'RFC')
     steps:
       - name: Setup Python
         uses: actions/setup-python@v6
